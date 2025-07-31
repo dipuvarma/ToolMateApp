@@ -1,4 +1,4 @@
-package com.dipuguide.toolmate.ui.theme
+package com.dipuguide.toolmate.presentation.ui.theme
 import androidx.compose.ui.graphics.Color
 
 
