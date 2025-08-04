@@ -64,7 +64,6 @@ fun BarcodeScannerScreen(
     viewModel: BarcodeScannerViewModel,
 ) {
     var permissionGranted by remember { mutableStateOf(false) }
-
     val barcodeState = viewModel.barcodeResult.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 
