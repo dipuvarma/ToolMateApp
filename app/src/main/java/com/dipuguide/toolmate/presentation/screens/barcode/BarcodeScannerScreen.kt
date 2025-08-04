@@ -63,7 +63,6 @@ import kotlinx.coroutines.launch
 fun BarcodeScannerScreen(
     viewModel: BarcodeScannerViewModel,
 ) {
-
     var permissionGranted by remember { mutableStateOf(false) }
 
     val barcodeState = viewModel.barcodeResult.collectAsState()
