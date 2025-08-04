@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "2.1.20"
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -76,12 +76,23 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     //For Dagger Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
 
     //For Navigation
     implementation(libs.androidx.navigation.compose)
     //For Serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    implementation(libs.barcode.scanning)
+
+    //dagger hilt
+    implementation("com.google.dagger:hilt-android:2.57")
+    ksp("com.google.dagger:hilt-android-compiler:2.57")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+
+
+
 }
