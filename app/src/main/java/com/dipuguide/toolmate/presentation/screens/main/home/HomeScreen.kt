@@ -172,7 +172,7 @@ fun MyTopAppBar(scrollBehavior: TopAppBarScrollBehavior) {
 @Composable
 fun ScrollContent(
     paddingValues: PaddingValues,
-    toolCardItems: List<ToolCardItemModel>,
+    toolCardItems: List<ToolCardItemModel>
 ) {
 
     var searchTool by remember { mutableStateOf("") }
