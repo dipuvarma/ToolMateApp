@@ -17,11 +17,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
-
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,
-    analyzeLive: (ImageProxy) -> Unit,
+    analyzeLive: (ImageProxy) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -38,47 +37,52 @@ fun CameraPreview(
             analyzeLive
         )
     }
-
 }
 
 fun startCamera(
     context: Context,
     lifecycleOwner: LifecycleOwner,
     previewView: PreviewView,
-    analyzeLive: (ImageProxy) -> Unit,
+    analyzeLive: (ImageProxy) -> Unit
 ) {
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
     cameraProviderFuture.addListener(
         {
             val cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder()
-                .build().also {
-                    it.surfaceProvider = previewView.surfaceProvider
-                }
-            val imageAnalysis = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build().also {
-                    it.setAnalyzer(
-                        ContextCompat.getMainExecutor(context)
-                    ) { imageProxy ->
-                        analyzeLive(imageProxy)
+            val preview =
+                Preview
+                    .Builder()
+                    .build()
+                    .also {
+                        it.surfaceProvider = previewView.surfaceProvider
                     }
-                }
+            val imageAnalysis =
+                ImageAnalysis
+                    .Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+                    .also {
+                        it.setAnalyzer(
+                            ContextCompat.getMainExecutor(context)
+                        ) { imageProxy ->
+                            analyzeLive(imageProxy)
+                        }
+                    }
 
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
-                    lifecycleOwner, cameraSelector, preview, imageAnalysis
+                    lifecycleOwner,
+                    cameraSelector,
+                    preview,
+                    imageAnalysis
                 )
-
             } catch (e: Exception) {
                 Log.e("CameraX", "Use case binding failed", e)
             }
-
         },
         ContextCompat.getMainExecutor(context)
     )
-
 }

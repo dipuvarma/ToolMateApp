@@ -1,35 +1,65 @@
 package com.dipuguide.toolmate.presentation.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dipuguide.toolmate.presentation.screens.barcode.BarcodeScannerScreen
 import com.dipuguide.toolmate.presentation.screens.barcode.BarcodeScannerViewModel
-import com.dipuguide.toolmate.presentation.screens.home.HomeScreen
-import com.google.accompanist.permissions.rememberPermissionState
-import java.util.jar.Manifest
+import com.dipuguide.toolmate.presentation.screens.document.DocumentScannerScreen
+import com.dipuguide.toolmate.presentation.screens.imageLabeling.ImageLabelingScreen
+import com.dipuguide.toolmate.presentation.screens.main.MainScreen
+import com.dipuguide.toolmate.presentation.screens.obejctDetection.ObjectDetectionScreen
+import com.dipuguide.toolmate.presentation.screens.speechToText.SpeechToTextScreen
+import com.dipuguide.toolmate.presentation.screens.textRecognition.TextRecognitionScreen
+
+val LocalNavController =
+    staticCompositionLocalOf<NavHostController> {
+        error("No NavController Provide")
+    }
 
 @Composable
-fun ToolMateNavGraph(
-    viewModel: BarcodeScannerViewModel
-) {
+fun ToolMateNavGraph(viewModel: BarcodeScannerViewModel) {
 
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = BarcodeScanner
-    ) {
-        composable<Home> {
-            HomeScreen()
-        }
-        composable<BarcodeScanner> {
-            BarcodeScannerScreen(
-                viewModel = viewModel
-            )
+    CompositionLocalProvider(LocalNavController provides navController) {
+        NavHost(
+            navController = navController,
+            startDestination = MainRoute,
+        ) {
+            composable<MainRoute> {
+                MainScreen()
+            }
+            composable<BarcodeScannerRoute> {
+                BarcodeScannerScreen(viewModel = viewModel)
+            }
+
+            composable<DocumentScannerRoute> {
+                DocumentScannerScreen()
+            }
+
+            composable<ObjectDetectionRoute> {
+                ObjectDetectionScreen()
+            }
+
+            composable<ImageLabelingRoute> {
+                ImageLabelingScreen()
+            }
+
+            composable<TextRecognitionRoute> {
+                TextRecognitionScreen()
+            }
+
+            composable<SpeechToTextRoute> {
+                SpeechToTextScreen()
+            }
         }
     }
-
 }

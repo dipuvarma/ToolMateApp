@@ -26,7 +26,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -60,10 +60,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //For Google Font
+    // For Google Font
     implementation(libs.androidx.ui.text.google.fonts)
 
-    //For Camerax
+    // For Camerax
     implementation(libs.androidx.camera.compose)
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
@@ -72,14 +72,14 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
 
-    //For Permission Handling
+    // For Permission Handling
     implementation(libs.accompanist.permissions)
 
-    //For Dagger Hilt
+    // For Dagger Hilt
 
-    //For Navigation
+    // For Navigation
     implementation(libs.androidx.navigation.compose)
-    //For Serialization
+    // For Serialization
     implementation(libs.kotlinx.serialization.json)
 
     // Coroutines
@@ -87,12 +87,9 @@ dependencies {
 
     implementation(libs.barcode.scanning)
 
-    //dagger hilt
+    // dagger hilt
     implementation("com.google.dagger:hilt-android:2.57")
     ksp("com.google.dagger:hilt-android-compiler:2.57")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-
-
-
-
+    implementation("androidx.compose.material:material-icons-extended-android:1.7.8")
 }

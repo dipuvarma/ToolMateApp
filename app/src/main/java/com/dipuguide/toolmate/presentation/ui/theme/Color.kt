@@ -1,7 +1,6 @@
 package com.dipuguide.toolmate.presentation.ui.theme
 import androidx.compose.ui.graphics.Color
 
-
 val primaryLight = Color(0xFF0059BB)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFF0070EA)
@@ -217,18 +216,3 @@ val surfaceContainerLowDarkHighContrast = Color(0xFF1C2027)
 val surfaceContainerDarkHighContrast = Color(0xFF2D3039)
 val surfaceContainerHighDarkHighContrast = Color(0xFF383B44)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF43474F)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
