@@ -10,8 +10,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,29 +23,42 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dipuguide.toolmate.R
 import com.dipuguide.toolmate.presentation.common.state.UiState
-import com.dipuguide.toolmate.presentation.navigation.Home
 import com.dipuguide.toolmate.presentation.navigation.LocalNavController
 import com.dipuguide.toolmate.presentation.navigation.MainRoute
 import com.dipuguide.toolmate.utils.CameraPermissionPlaceholder
+import com.dipuguide.toolmate.utils.Dimen
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,12 +71,21 @@ fun BarcodeScannerScreen(viewModel: BarcodeScannerViewModel) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val navController = LocalNavController.current
     val uiState by viewModel.uiState.collectAsState()
     val barcodeResults by viewModel.barcodeResult.collectAsState()
+    val cameraSelector by viewModel.cameraSelector.collectAsState()
     val hasCameraPermission by viewModel.hasCameraPermission.collectAsState()
     val hasStoragePermissions by viewModel.hasStoragePermission.collectAsState()
-    val navController = LocalNavController.current
 
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    val sheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            SheetValue.PartiallyExpanded,
+            skipHiddenState = true
+        )
+    )
 
     val cameraPermissionLauncher =
         rememberLauncherForActivityResult(
@@ -107,8 +131,7 @@ fun BarcodeScannerScreen(viewModel: BarcodeScannerViewModel) {
                     Log.e("BarcodeScreen", "Error decoding image from gallery: ${e.message}", e)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
-                            context,
-                            "Failed to load image: ${e.message}",
+                            context, "Failed to load image: ${e.message}",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -186,16 +209,21 @@ fun BarcodeScannerScreen(viewModel: BarcodeScannerViewModel) {
                     }
                 },
                 actions = {
+                    IconButton(onClick = {
+                        viewModel.onFlipCamera()
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.camera_flip_icon),
+                            contentDescription = "camera flip icon"
+                        )
+                    }
+
                     IconButton(
                         onClick = {
                             if (hasStoragePermissions) {
                                 photoPickerLauncher.launch("image/*")
                             } else {
                                 storagePermissionLauncher.launch(viewModel.permissionRepository.getStoragePermission())
-                                Log.d(
-                                    "TAG",
-                                    "BarcodeScannerScreen: ${viewModel.permissionRepository.getStoragePermission()}"
-                                )
                             }
                         }
                     ) {
@@ -208,50 +236,81 @@ fun BarcodeScannerScreen(viewModel: BarcodeScannerViewModel) {
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            // For Camera Preview
-            if (hasCameraPermission) {
-                CameraPreview(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .background(
-                            Color.Black,
-                            RoundedCornerShape(8.dp)
-                        ),
-                    analyzeLive = { imageProxy ->
-                        viewModel.scanBarcodeLive(imageProxy = imageProxy)
-                    }
-                )
-            } else {
-                CameraPermissionPlaceholder(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(16.dp),
-                    onPermissionRequested = {
-                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(42.dp))
-            // For Barcode Result
-            if (barcodeResults.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(barcodeResults) { barcode ->
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            BottomSheetScaffold(
+                modifier = Modifier.padding(innerPadding),
+                scaffoldState = sheetScaffoldState,
+                sheetPeekHeight = 150.dp,
+                sheetContainerColor = MaterialTheme.colorScheme.background,
+                sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                sheetDragHandle = { BottomSheetDefaults.DragHandle() },
+                sheetContent = {
+                    Text(
+                        modifier = Modifier.padding(horizontal = Dimen.PaddingSmall),
+                        text = "Result",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(Dimen.SpacerSmall))
+                    if (barcodeResults.isNotEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Dimen.PaddingMedium)
+                        ) {
+                            items(barcodeResults) { barcode ->
+                                barcode.barcode.rawValue?.let {
+                                    Text(
+                                        text = it,
+                                        modifier = Modifier.padding(horizontal = Dimen.PaddingSmall)
+                                    )
+                                }
+                            }
+                        }
+                    } else {
                         Text(
-                            text = "Result: ${barcode.barcode.rawValue}",
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(Dimen.PaddingSmall),
+                            text = "Nothing Detected yet. Scan live or pick an image",
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
+                },
+                content = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // For Camera Preview
+                        if (hasCameraPermission) {
+                            CameraPreview(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .background(
+                                        Color.Black,
+                                        RoundedCornerShape(8.dp)
+                                    ),
+                                cameraSelector = cameraSelector,
+                                analyzeLive = { imageProxy ->
+                                    viewModel.scanBarcodeLive(imageProxy = imageProxy)
+                                }
+                            )
+                        } else {
+                            CameraPermissionPlaceholder(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .padding(16.dp),
+                                onPermissionRequested = {
+                                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                                }
+                            )
+                        }
+                    }
                 }
-            }
+            )
         }
     }
 }

@@ -20,7 +20,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,
-    analyzeLive: (ImageProxy) -> Unit
+    cameraSelector: CameraSelector,
+    analyzeLive: (ImageProxy) -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -34,6 +35,7 @@ fun CameraPreview(
             context,
             lifecycleOwner,
             previewView,
+            cameraSelector,
             analyzeLive
         )
     }
@@ -43,7 +45,8 @@ fun startCamera(
     context: Context,
     lifecycleOwner: LifecycleOwner,
     previewView: PreviewView,
-    analyzeLive: (ImageProxy) -> Unit
+    cameraSelector: CameraSelector,
+    analyzeLive: (ImageProxy) -> Unit,
 ) {
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
     cameraProviderFuture.addListener(
@@ -68,8 +71,6 @@ fun startCamera(
                             analyzeLive(imageProxy)
                         }
                     }
-
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 cameraProvider.unbindAll()
