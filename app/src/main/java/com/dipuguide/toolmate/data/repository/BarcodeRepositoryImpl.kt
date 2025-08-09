@@ -7,14 +7,16 @@ import com.dipuguide.toolmate.domain.repository.BarcodeRepository
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGetImage::class)
 class BarcodeRepositoryImpl
 @Inject
 constructor(
-    val scanner: BarcodeScanner
+    val scanner: BarcodeScanner,
 ) : BarcodeRepository {
     // Suspend function to scan barcodes from ImageProxy
     override suspend fun scanBarcodeLive(imageProxy: ImageProxy): Result<List<Barcode>> {
@@ -37,7 +39,16 @@ constructor(
         }
     }
 
-    override suspend fun scanBarcodeStatic(uri: String?) {
-        TODO("Not yet implemented")
+    override suspend fun scanBarcodeStatic(inputImage: InputImage): Result<List<Barcode>> {
+        return try {
+            val barcodes = scanner.process(inputImage).await()
+            if (barcodes.isEmpty()) {
+                return Result.failure(RuntimeException("No Barcode Found"))
+            } else {
+                Result.success(barcodes)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

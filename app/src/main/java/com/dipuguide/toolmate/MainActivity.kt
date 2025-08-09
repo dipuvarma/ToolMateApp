@@ -26,11 +26,10 @@ class MainActivity : ComponentActivity() {
             val settingViewModel: SettingViewModel = hiltViewModel()
             val isDarkMode by settingViewModel.isDarkModeActive.collectAsState()
             settingViewModel.initialThemeLoad(isSystemInDarkTheme())
-
             ToolMateTheme(
                 darkTheme = isDarkMode
             ) {
-         ToolMateNavGraph(viewModel)
+                ToolMateNavGraph(viewModel)
             }
         }
     }

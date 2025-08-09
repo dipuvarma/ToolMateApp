@@ -13,9 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Singleton
-class PermissionRepositoryImpl
-@Inject
-constructor(
+class PermissionRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : PermissionRepository {
     override fun getStoragePermission(): String =

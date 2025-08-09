@@ -18,22 +18,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dipuguide.toolmate.R
+import com.dipuguide.toolmate.domain.model.ToolCardItemModel
+import com.dipuguide.toolmate.presentation.navigation.BarcodeScannerRoute
 import com.dipuguide.toolmate.presentation.navigation.Bookmark
+import com.dipuguide.toolmate.presentation.navigation.DocumentScannerRoute
 import com.dipuguide.toolmate.presentation.navigation.Home
+import com.dipuguide.toolmate.presentation.navigation.ImageLabelingRoute
+import com.dipuguide.toolmate.presentation.navigation.LocalNavController
+import com.dipuguide.toolmate.presentation.navigation.ObjectDetectionRoute
 import com.dipuguide.toolmate.presentation.navigation.Setting
+import com.dipuguide.toolmate.presentation.navigation.SpeechToTextRoute
+import com.dipuguide.toolmate.presentation.navigation.TextRecognitionRoute
 import com.dipuguide.toolmate.presentation.screens.main.bookmark.BookmarkScreen
 import com.dipuguide.toolmate.presentation.screens.main.home.HomeScreen
 import com.dipuguide.toolmate.presentation.screens.main.setting.SettingScreen
 
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
-
+fun MainScreen() {
     val tabNavController = rememberNavController()
     val navBackStackEntry by tabNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
@@ -88,7 +97,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         ) {
 
             composable(Home.route) {
-                HomeScreen(paddingValues = paddingValues)
+                HomeScreen()
             }
 
             composable(Bookmark.route) {
