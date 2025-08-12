@@ -1,10 +1,12 @@
 package com.dipuguide.toolmate.di
 
 import com.dipuguide.toolmate.data.repository.BarcodeRepositoryImpl
+import com.dipuguide.toolmate.data.repository.DocumentScannerRepoImpl
 import com.dipuguide.toolmate.data.repository.PermissionRepositoryImpl
 import com.dipuguide.toolmate.data.repository.SharedPreferenceRepositoryImpl
 import com.dipuguide.toolmate.data.repository.ThemeRepositoryImpl
 import com.dipuguide.toolmate.domain.repository.BarcodeRepository
+import com.dipuguide.toolmate.domain.repository.DocumentScannerRepo
 import com.dipuguide.toolmate.domain.repository.PermissionRepository
 import com.dipuguide.toolmate.domain.repository.SharedPreferenceRepository
 import com.dipuguide.toolmate.domain.repository.ThemeRepository
@@ -32,4 +34,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindBarcodeScannerRepository(barcodeRepositoryImpl: BarcodeRepositoryImpl): BarcodeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDocumentScannerRepo(documentScannerRepoImpl: DocumentScannerRepoImpl): DocumentScannerRepo
 }

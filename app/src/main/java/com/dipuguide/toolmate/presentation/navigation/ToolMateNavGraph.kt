@@ -25,7 +25,7 @@ val LocalNavController =
     }
 
 @Composable
-fun ToolMateNavGraph(viewModel: BarcodeScannerViewModel) {
+fun ToolMateNavGraph() {
 
     val navController = rememberNavController()
 
@@ -38,7 +38,7 @@ fun ToolMateNavGraph(viewModel: BarcodeScannerViewModel) {
                 MainScreen()
             }
             composable<BarcodeScannerRoute> {
-                BarcodeScannerScreen(viewModel = viewModel)
+                BarcodeScannerScreen()
             }
 
             composable<DocumentScannerRoute> {

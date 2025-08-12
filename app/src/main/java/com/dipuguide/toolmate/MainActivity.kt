@@ -18,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val viewModel: BarcodeScannerViewModel by viewModels()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -29,7 +28,7 @@ class MainActivity : ComponentActivity() {
             ToolMateTheme(
                 darkTheme = isDarkMode
             ) {
-                ToolMateNavGraph(viewModel)
+                ToolMateNavGraph()
             }
         }
     }
