@@ -2,7 +2,6 @@ package com.dipuguide.toolmate.presentation.screens.document
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PictureAsPdf
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,32 +31,29 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dipuguide.toolmate.presentation.common.state.UiState
 import com.dipuguide.toolmate.presentation.navigation.DocumentScannerRoute
 import com.dipuguide.toolmate.presentation.navigation.LocalNavController
 import com.dipuguide.toolmate.utils.Dimen
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("ContextCastToActivity")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentScannerScreen(modifier: Modifier = Modifier) {
 
     val activity = LocalContext.current as Activity
+    val context = LocalContext.current
     val viewModel: DocumentScannerViewModel = hiltViewModel<DocumentScannerViewModel>()
+    val documentResult by viewModel.documentScannerResult.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
 
@@ -81,12 +77,14 @@ fun DocumentScannerScreen(modifier: Modifier = Modifier) {
                     Text(text = "Title")
                 },
                 navigationIcon = {
-
-                },
+                    navController.navigate(DocumentScannerRoute)
+                }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 onClick = {
                     viewModel.startDocumentScan(
                         activity = activity
@@ -96,7 +94,9 @@ fun DocumentScannerScreen(modifier: Modifier = Modifier) {
                 }
             ) {
                 Row(
-                    modifier = Modifier.padding(Dimen.PaddingSmall)
+                    modifier = Modifier.padding(Dimen.PaddingSmall),
+                    horizontalArrangement = Arrangement.spacedBy(Dimen.SpacerSmall),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Default.DocumentScanner,
@@ -107,18 +107,25 @@ fun DocumentScannerScreen(modifier: Modifier = Modifier) {
             }
         }
     ) { paddingValues ->
+
         LazyColumn(
             modifier = Modifier.padding(paddingValues),
             contentPadding = PaddingValues(horizontal = Dimen.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(Dimen.SpacerSmall)
         ) {
-            items(10) {
+            item {
+                Spacer(modifier = Modifier.height(Dimen.SpacerSmall))
+            }
+            items(3) {
                 PdfDocumentWidget(
                     pdfTitle = "Motu Photo 22376r6288283",
                     pdfDetail = "124:2367:367, yhjbshgsdsdssddsds"
                 ) {
 
                 }
+            }
+            item {
+                Spacer(modifier = Modifier.height(Dimen.SpacerSmall))
             }
         }
     }
@@ -138,8 +145,11 @@ fun PdfDocumentWidget(
         },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            2.dp
         )
     ) {
         Row(
@@ -147,6 +157,7 @@ fun PdfDocumentWidget(
                 .fillMaxWidth()
                 .padding(Dimen.PaddingSmall),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Dimen.SpacerSmall)
         ) {
             Icon(
                 imageVector = Icons.Default.PictureAsPdf,
@@ -168,7 +179,7 @@ fun PdfDocumentWidget(
                     text = "pdf Details",
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Icon(

@@ -38,9 +38,7 @@ class BarcodeScannerViewModel @Inject constructor(
 
     init {
         permissionRepository.notifyPermissionChanged(Manifest.permission.CAMERA)
-        permissionRepository.notifyPermissionChanged(
-            permissionRepository.getStoragePermission()
-        )
+        permissionRepository.notifyPermissionChanged(permissionRepository.getStoragePermission())
     }
 
     fun scanBarcodeLive(imageProxy: ImageProxy) {

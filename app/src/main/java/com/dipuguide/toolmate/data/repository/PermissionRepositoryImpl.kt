@@ -41,12 +41,9 @@ class PermissionRepositoryImpl @Inject constructor(
         }
     }
 
-    private val _storagePermissionState = MutableStateFlow(
-        checkPermission(getStoragePermission())
-    )
+    private val _storagePermissionState = MutableStateFlow(checkPermission(getStoragePermission()))
     override val storagePermissionState: StateFlow<Boolean> = _storagePermissionState
 
-    private val _cameraPermissionState =
-        MutableStateFlow(checkPermission(Manifest.permission.CAMERA))
+    private val _cameraPermissionState = MutableStateFlow(checkPermission(Manifest.permission.CAMERA))
     override val cameraPermissionState: StateFlow<Boolean> = _cameraPermissionState
 }
